@@ -1,26 +1,30 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { NCard, NDescriptions, NDescriptionsItem, NTag, NButton } from 'naive-ui'
+import { NCard, NDescriptions, NDescriptionsItem, NButton } from 'naive-ui'
 import { ArrowBackOutline } from '@vicons/ionicons5'
 import { NIcon } from 'naive-ui'
+import { useMessage } from 'naive-ui'
 import type { Project } from '@/types'
 import { getProject } from '@/api/project'
 
 const route = useRoute()
 const router = useRouter()
+const message = useMessage()
 const project = ref<(Project & { task_count: number; requirement_count: number }) | null>(null)
 const loading = ref(true)
 
 const statusLabel: Record<string, string> = { planning: '立项', in_progress: '实施中', completed: '已竣工', suspended: '挂起' }
-const statusType: Record<string, string> = { planning: 'info', in_progress: 'warning', completed: 'success', suspended: 'default' }
 
 onMounted(async () => {
   try {
     const res = await getProject(route.params.id as string)
     project.value = res.data.data
-  } catch { /* */ }
-  finally { loading.value = false }
+  } catch {
+    message.error('加载项目详情失败')
+  } finally {
+    loading.value = false
+  }
 })
 </script>
 

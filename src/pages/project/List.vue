@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, h } from 'vue'
 import { useRouter } from 'vue-router'
-import { NDataTable, NButton, NSpace, NInput, NModal, NCard, NForm, NFormItem, NSelect, useMessage } from 'naive-ui'
+import { NDataTable, NButton, NSpace, NInput, NModal, NCard, NForm, NFormItem, NSelect, NPopconfirm, useMessage } from 'naive-ui'
 import type { DataTableColumns } from 'naive-ui'
 import type { Project } from '@/types'
 import { getProjects, createProject, deleteProject } from '@/api/project'
@@ -44,7 +44,10 @@ const columns: DataTableColumns<Project> = [
       return h(NSpace, { size: 4 }, {
         default: () => [
           h(NButton, { size: 'tiny', quaternary: true, onClick: () => router.push(`/projects/${row.id}`) }, { default: () => '查看' }),
-          h(NButton, { size: 'tiny', quaternary: true, type: 'error', onClick: () => handleDelete(row) }, { default: () => '删除' }),
+          h(NPopconfirm, { onPositiveClick: () => handleDelete(row) }, {
+            trigger: () => h(NButton, { size: 'tiny', quaternary: true, type: 'error' }, { default: () => '删除' }),
+            default: () => '确定删除该项目？',
+          }),
         ],
       })
     },
@@ -55,9 +58,8 @@ async function fetchProjects() {
   loading.value = true
   try {
     const res = await getProjects({ page: page.value, keyword: keyword.value, status: statusFilter.value || '' })
-    const body = res.data
-    projects.value = body.data
-    total.value = body.pagination?.total || 0
+    projects.value = res.data.data
+    total.value = res.data.pagination?.total || 0
   } catch { message.error('获取项目列表失败') }
   finally { loading.value = false }
 }
@@ -70,7 +72,7 @@ async function handleCreate() {
     createForm.value = { project_code: '', name: '', description: '', status: 'planning' }
     message.success('创建成功')
     fetchProjects()
-  } catch (e: any) { message.error(e.response?.data?.message || '创建失败') }
+  } catch (e: any) { message.error(e.message || e.response?.data?.message || '创建失败') }
   finally { saving.value = false }
 }
 
@@ -103,16 +105,17 @@ onMounted(fetchProjects)
       <NButton size="small" @click="page=1; fetchProjects()">搜索</NButton>
     </NSpace>
 
-    <NDataTable
-      :columns="columns" :data="projects" :loading="loading" bordered size="small"
-      :pagination="{
-        page: page, pageSize: 20, itemCount: total,
-        onChange(p: number) { page = p; fetchProjects() },
-        onUpdatePageSize() {},
-      }"
-    />
+    <div style="overflow-x: auto">
+      <NDataTable
+        :columns="columns" :data="projects" :loading="loading" bordered size="small"
+        :pagination="{
+          page: page, pageSize: 20, itemCount: total,
+          onChange(p: number) { page = p; fetchProjects() },
+          onUpdatePageSize() {},
+        }"
+      />
+    </div>
 
-    <!-- Create Modal -->
     <NModal v-model:show="showCreate" title="新建项目">
       <NCard style="width: 480px; max-width: 90vw" :bordered="true" role="dialog">
         <NForm :model="createForm">

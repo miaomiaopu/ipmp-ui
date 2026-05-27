@@ -16,15 +16,23 @@ api.interceptors.request.use((config) => {
   return config
 })
 
-// 响应拦截器：统一错误处理 + token 过期自动刷新
+// 响应拦截器：统一错误处理
 api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
+  (response) => {
+    // 校验后端统一响应 code，非 0 视为业务错误
+    const body = response.data
+    if (body && typeof body.code === 'number' && body.code !== 0) {
+      return Promise.reject(new Error(body.message || 'request failed'))
+    }
+    return response
+  },
+  (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('access_token')
       localStorage.removeItem('refresh_token')
       localStorage.removeItem('user')
-      if (window.location.pathname !== '/login') {
+      // 防止 /login 页触发无限重定向
+      if (!window.location.pathname.startsWith('/login')) {
         window.location.href = '/login'
       }
     }

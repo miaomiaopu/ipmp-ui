@@ -3,6 +3,7 @@ import { ref, h } from 'vue'
 import { NGrid, NGridItem, NCard, NIcon } from 'naive-ui'
 import { BarChartOutline, PeopleOutline, FolderOpenOutline, TimerOutline } from '@vicons/ionicons5'
 
+// TODO: Phase 3 对接仪表盘统计 API (/api/v1/dashboard/stats)
 const stats = [
   { label: '活跃项目', value: '-', icon: FolderOpenOutline,   accent: 'var(--accent)' },
   { label: '本周任务', value: '-', icon: BarChartOutline,      accent: 'var(--success)' },

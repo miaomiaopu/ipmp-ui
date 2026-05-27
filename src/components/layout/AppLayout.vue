@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { computed, ref, watch, onMounted, onBeforeUnmount, h } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount, h } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
   NLayout, NLayoutHeader, NLayoutContent, NMenu, NButton, NIcon,
-  NSpace, NBreadcrumb, NBreadcrumbItem, NDrawer, NDrawerContent,
-  NGrid, NGridItem,
+  NSpace, NDrawer, NDrawerContent,
 } from 'naive-ui'
 import {
-  GridOutline, PeopleOutline, FolderOpenOutline,
+  PeopleOutline, FolderOpenOutline,
   LogOutOutline, SunnyOutline, MoonOutline, MenuOutline,
   BarChartOutline,
 } from '@vicons/ionicons5'
@@ -20,7 +19,7 @@ const router = useRouter()
 const auth = useAuthStore()
 const theme = useThemeStore()
 
-// 响应式断点
+// 响应式断点: <640 手机, 640-1023 平板, >=1024 桌面
 const windowWidth = ref(window.innerWidth)
 const isMobile  = computed(() => windowWidth.value < 640)
 const isTablet  = computed(() => windowWidth.value >= 640 && windowWidth.value < 1024)
@@ -32,7 +31,6 @@ function onResize() { windowWidth.value = window.innerWidth }
 onMounted(() => window.addEventListener('resize', onResize))
 onBeforeUnmount(() => window.removeEventListener('resize', onResize))
 
-// 菜单定义
 const menuOptions: MenuOption[] = [
   { label: '仪表盘',   key: '/dashboard',   icon: () => h(NIcon, null, () => h(BarChartOutline)) },
   { label: '客户管理', key: '/customers',    icon: () => h(NIcon, null, () => h(PeopleOutline)) },
@@ -52,7 +50,6 @@ const currentKey = computed(() => {
   return '/dashboard'
 })
 
-// 移动端抽屉
 const drawerOpen = ref(false)
 
 function navTo(key: string) {
@@ -68,7 +65,7 @@ function handleLogout() {
 
 <template>
   <NLayout style="height: 100vh">
-    <!-- ═══ Header ═══ -->
+    <!-- Header -->
     <NLayoutHeader
       bordered
       style="height: 52px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px"
@@ -103,7 +100,7 @@ function handleLogout() {
     </NLayoutHeader>
 
     <NLayout has-sider style="flex: 1; overflow: hidden">
-      <!-- ═══ PC/Tablet Sidebar ═══ -->
+      <!-- PC/Tablet Sidebar -->
       <div
         v-if="showSidebar"
         style="width: 200px; border-right: 1px solid var(--rule); background: var(--surface); padding-top: 8px; flex-shrink: 0; overflow-y: auto"
@@ -116,7 +113,7 @@ function handleLogout() {
         />
       </div>
 
-      <!-- ═══ Content ═══ -->
+      <!-- Content -->
       <NLayoutContent
         :content-style="{
           padding: isMobile ? '16px' : '24px',
@@ -129,7 +126,7 @@ function handleLogout() {
       </NLayoutContent>
     </NLayout>
 
-    <!-- ═══ Mobile Bottom Tab ═══ -->
+    <!-- Mobile Bottom Tab -->
     <div
       v-if="isMobile"
       style="
@@ -154,7 +151,7 @@ function handleLogout() {
       </div>
     </div>
 
-    <!-- ═══ Mobile Drawer ═══ -->
+    <!-- Mobile Drawer -->
     <NDrawer v-model:show="drawerOpen" :width="240" placement="left">
       <NDrawerContent title="导航" body-content-style="padding: 8px 0">
         <NMenu

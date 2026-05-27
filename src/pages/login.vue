@@ -8,16 +8,20 @@ const router = useRouter()
 const auth = useAuthStore()
 const message = useMessage()
 
-const form = ref({ username: 'admin', password: 'admin123' })
+const form = ref({ username: '', password: '' })
 const loading = ref(false)
 
 async function handleLogin() {
+  if (!form.value.username || !form.value.password) {
+    message.warning('请输入用户名和密码')
+    return
+  }
   loading.value = true
   try {
     await auth.login(form.value.username, form.value.password)
     router.push('/dashboard')
   } catch (e: any) {
-    message.error(e.response?.data?.message || '登录失败')
+    message.error(e.message || e.response?.data?.message || '登录失败')
   } finally {
     loading.value = false
   }
@@ -34,7 +38,6 @@ async function handleLogin() {
     "
   >
     <div style="width: 380px; max-width: 100%">
-      <!-- Logo -->
       <div style="text-align: center; margin-bottom: 36px">
         <div style="font-size: 28px; font-weight: 800; letter-spacing: -1px; color: var(--ink)">
           IPMP

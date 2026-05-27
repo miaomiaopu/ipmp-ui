@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { NCard, NDescriptions, NDescriptionsItem, NTag, NButton, NSpace } from 'naive-ui'
+import { NCard, NDescriptions, NDescriptionsItem, NButton } from 'naive-ui'
 import { ArrowBackOutline } from '@vicons/ionicons5'
 import { NIcon } from 'naive-ui'
+import { useMessage } from 'naive-ui'
 import type { Customer } from '@/types'
 import { getCustomer } from '@/api/customer'
 
 const route = useRoute()
 const router = useRouter()
+const message = useMessage()
 const customer = ref<Customer | null>(null)
 const projectCount = ref(0)
 const loading = ref(true)
@@ -18,8 +20,11 @@ onMounted(async () => {
     const res = await getCustomer(route.params.id as string)
     customer.value = res.data.data.customer
     projectCount.value = res.data.data.project_count
-  } catch { /* */ }
-  finally { loading.value = false }
+  } catch {
+    message.error('加载客户详情失败')
+  } finally {
+    loading.value = false
+  }
 })
 </script>
 
@@ -35,11 +40,9 @@ onMounted(async () => {
     <template v-else-if="customer">
       <div class="page-header">
         <h1>{{ customer.name }}</h1>
-        <NSpace>
-          <span class="status-dot" :class="customer.status">
-            {{ customer.status === 'active' ? '正常' : '停用' }}
-          </span>
-        </NSpace>
+        <span class="status-dot" :class="customer.status">
+          {{ customer.status === 'active' ? '正常' : '停用' }}
+        </span>
       </div>
 
       <NCard :bordered="true">

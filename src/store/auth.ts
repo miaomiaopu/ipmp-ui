@@ -2,23 +2,19 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { UserBrief } from '@/types'
 import { login as loginApi } from '@/api/auth'
-import { useRouter } from 'vue-router'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<UserBrief | null>(null)
-  const accessToken = ref<string | null>(null)
-  const refreshToken = ref<string | null>(null)
+  const accessToken = ref<string | null>(localStorage.getItem('access_token'))
+  const refreshToken = ref<string | null>(localStorage.getItem('refresh_token'))
+
+  // 从 storage 恢复用户信息
+  const storedUser = localStorage.getItem('user')
+  if (storedUser) {
+    try { user.value = JSON.parse(storedUser) } catch { /* ignore */ }
+  }
 
   const isLoggedIn = computed(() => !!accessToken.value)
-
-  function setupFromStorage() {
-    accessToken.value = localStorage.getItem('access_token')
-    refreshToken.value = localStorage.getItem('refresh_token')
-    const userStr = localStorage.getItem('user')
-    if (userStr) {
-      try { user.value = JSON.parse(userStr) } catch { /* ignore */ }
-    }
-  }
 
   async function login(username: string, password: string) {
     const res = await loginApi(username, password)
@@ -41,5 +37,5 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('user')
   }
 
-  return { user, accessToken, refreshToken, isLoggedIn, setupFromStorage, login, clearAuth }
+  return { user, accessToken, refreshToken, isLoggedIn, login, clearAuth }
 })
