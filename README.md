@@ -5,6 +5,7 @@
 ![Naive UI](https://img.shields.io/badge/Naive%20UI-2.x-18a058)
 ![Vite](https://img.shields.io/badge/Vite-6.x-646CFF?logo=vite)
 ![CI](https://img.shields.io/badge/CI-typecheck%20%7C%20lint%20%7C%20build-green?logo=githubactions)
+![Version](https://img.shields.io/badge/Version-0.0.1-blue)
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue)
 
 IPMP（Intelligent Project Management Platform）前端应用，提供项目管理、工时录入、周报查看等交互界面。AI 周报优先支持 DeepSeek。
