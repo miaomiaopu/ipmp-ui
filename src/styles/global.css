@@ -1,0 +1,98 @@
+/* === IPMP 双主题设计 === */
+
+/* ── 浅色: 蓝图工作台 Architect's Desk ── */
+[data-theme="light"] {
+  --ink:       #1c1f2e;
+  --ink-soft:  #3d4154;
+  --ink-muted: #6b7189;
+  --paper:     #f7f5f0;
+  --surface:   #ffffff;
+  --surface-alt:#f2efe8;
+  --rule:      #e6e2d6;
+  --rule-strong:#d4cfc2;
+
+  --accent:        #2f4a6e;
+  --accent-hover:  #3d5f8c;
+  --accent-soft:   #e8edf3;
+
+  --success:       #4e7a5e;
+  --success-soft:  #e8f0e9;
+  --warning:       #c0903c;
+  --warning-soft:  #faf3e4;
+  --danger:        #c4724f;
+  --danger-soft:   #f9ede6;
+
+  --shadow-sm: 0 1px 2px rgba(28,31,46,0.05);
+  --shadow-md: 0 2px 8px rgba(28,31,46,0.07);
+  --shadow-lg: 0 8px 24px rgba(28,31,46,0.10);
+}
+
+/* ── 深色: 暗夜操控台 Night Console ── */
+[data-theme="dark"] {
+  --ink:       #e4e6ed;
+  --ink-soft:  #b8bcc8;
+  --ink-muted: #787e93;
+  --paper:     #12141c;
+  --surface:   #1a1d28;
+  --surface-alt:#222530;
+  --rule:      #2a2d3a;
+  --rule-strong:#363a48;
+
+  --accent:        #7b9fcc;
+  --accent-hover:  #93b3da;
+  --accent-soft:   #1e2735;
+
+  --success:       #6ba87a;
+  --success-soft:  #1c2a21;
+  --warning:       #d4a03c;
+  --warning-soft:  #2a2218;
+  --danger:        #d48b6a;
+  --danger-soft:   #2a1e1a;
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.25);
+  --shadow-md: 0 2px 8px rgba(0,0,0,0.35);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.45);
+}
+
+/* === Base === */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body, #app {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s, color 0.2s;
+}
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--rule-strong); border-radius: 3px; }
+
+.font-mono {
+  font-family: 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+  color: var(--ink-muted);
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.page-header h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.3px;
+}
+
+@media (max-width: 767px) {
+  .page-header h1 { font-size: 17px; }
+}
