@@ -4,9 +4,10 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)
 ![Naive UI](https://img.shields.io/badge/Naive%20UI-2.x-18a058)
 ![Vite](https://img.shields.io/badge/Vite-6.x-646CFF?logo=vite)
+![CI](https://img.shields.io/badge/CI-typecheck%20%7C%20lint%20%7C%20build-green?logo=githubactions)
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue)
 
-IPMP（Intelligent Project Management Platform）前端应用，提供项目管理、工时录入、周报查看等交互界面。
+IPMP（Intelligent Project Management Platform）前端应用，提供项目管理、工时录入、周报查看等交互界面。AI 周报优先支持 DeepSeek。
 
 ## 目录
 
@@ -16,6 +17,8 @@ IPMP（Intelligent Project Management Platform）前端应用，提供项目管�
 - [项目结构](#项目结构)
 - [页面路由](#页面路由)
 - [组件架构](#组件架构)
+- [CI/CD](#cicd)
+- [Docker 部署](#docker-部署)
 - [安全](#安全)
 - [扩展计划](#扩展计划)
 - [贡献指南](#贡献指南)
@@ -30,7 +33,7 @@ IPMP（Intelligent Project Management Platform）前端应用，提供项目管�
 - **需求跟踪**: 项目需求与售后需求的管理面板
 - **工时录入**: 周网格视图快速录入每日工时，支持描述编辑
 - **周报查看**: 个人工作周报 + 项目周报，支持 AI 生成与编辑
-- **个人设置**: AI Key 配置（加密传输、不明文回显）
+- **个人设置**: AI Key 配置（DeepSeek/OpenAI/Claude），加密传输、不明文回显
 
 ## 技术栈
 
@@ -43,35 +46,22 @@ IPMP（Intelligent Project Management Platform）前端应用，提供项目管�
 | 状态管理 | Pinia |
 | 路由 | Vue Router 4 |
 | HTTP 客户端 | Axios |
+| 测试 | Vitest |
 | 日期处理 | dayjs |
 | 工具库 | @vueuse/core |
 
 ## 快速开始
 
-### 环境要求
-
-- Node.js 20+
-- pnpm / npm / yarn
-
-### 本地开发
-
 ```bash
-# 克隆仓库
 git clone <repo-url> ipmp-ui
 cd ipmp-ui
-
-# 复制环境变量
-cp .env.example .env.development
-
-# 安装依赖
 pnpm install
-
-# 启动开发服务器
+cp .env.example .env
 pnpm dev
 # 默认监听 http://localhost:5173
 ```
 
-### 生产构建
+生产构建：
 
 ```bash
 pnpm build
@@ -82,44 +72,25 @@ pnpm build
 
 ```
 ipmp-ui/
-├── public/
-│   ├── favicon.ico
-│   └── logo.svg
 ├── src/
-│   ├── api/                       # API 调用层 (Axios)
-│   │   ├── request.ts             # 实例 + 拦截器
-│   │   ├── auth.ts                # 认证接口
-│   │   ├── customer.ts            # 客户接口
-│   │   ├── project.ts             # 项目接口
-│   │   ├── task.ts                # 任务接口
-│   │   ├── requirement.ts         # 需求接口
-│   │   ├── workLog.ts             # 工时接口
-│   │   ├── weeklyReport.ts        # 周报接口
-│   │   └── ai.ts                  # AI 接口
+│   ├── api/                       # API 调用层 (Axios, 仅 GET/POST)
 │   ├── components/
-│   │   ├── layout/                # 布局组件 (AppLayout, Sidebar, Navbar)
-│   │   ├── common/                # 通用组件 (DataTable, SearchForm, StatusTag)
-│   │   ├── task/                  # 任务组件 (TaskForm, KanbanCard)
-│   │   ├── work-log/              # 工时组件 (DailyLogForm, WeeklyGrid)
-│   │   └── report/                # 报表组件 (WeeklyReportViewer, ReportEditor)
+│   │   ├── layout/                # AppLayout, Sidebar, Navbar
+│   │   ├── common/                # DataTable, SearchForm, StatusTag
+│   │   ├── task/                  # TaskForm, KanbanCard
+│   │   ├── work-log/              # DailyLogForm, WeeklyGrid
+│   │   └── report/                # WeeklyReportViewer, ReportEditor
 │   ├── pages/                     # 页面组件
-│   │   ├── login/LoginPage.vue
-│   │   ├── dashboard/DashboardPage.vue
-│   │   ├── customer/              # 客户列表/详情
-│   │   ├── project/               # 项目列表/详情
-│   │   ├── task/                  # 任务列表/详情
-│   │   ├── requirement/           # 需求列表/详情
-│   │   ├── work-log/WorkLogPage.vue
-│   │   ├── report/                # 周报页面
-│   │   └── settings/SettingsPage.vue
-│   ├── router/                    # 路由配置 + 守卫
+│   ├── router/                    # 路由 + 守卫
 │   ├── store/                     # Pinia 状态管理
 │   ├── composables/               # 组合式函数
 │   ├── types/                     # TypeScript 类型定义
 │   └── utils/                     # 工具函数
+├── .github/workflows/
+│   ├── ci.yml                     # CI: typecheck + lint + test + build
+│   └── deploy.yml                 # CD: 静态资源部署
 ├── index.html
 ├── vite.config.ts
-├── tsconfig.json
 └── .env.example
 ```
 
@@ -147,26 +118,51 @@ ipmp-ui/
 ```
 AppLayout
 ├── Sidebar (Naive UI Menu)
-│   ├── 仪表盘
-│   ├── 客户管理
-│   ├── 项目管理
-│   ├── 任务管理
-│   ├── 需求管理
-│   ├── 工时录入
-│   ├── 周报
-│   └── 设置
-├── Navbar
-│   ├── 面包屑
-│   ├── 通知图标
-│   └── 用户下拉菜单
-└── <router-view /> (Content)
+│   ├── 仪表盘 / 客户管理 / 项目管理 / 任务管理
+│   ├── 需求管理 / 工时录入 / 周报 / 设置
+├── Navbar (面包屑 + 通知 + 用户菜单)
+└── <router-view />
+```
+
+## CI/CD
+
+| Pipeline | 触发 | 内容 |
+|----------|------|------|
+| **CI** | push / PR to main | typecheck → lint → test → gitleaks → build |
+| **CD** | tag `v*` / 手动 | 构建 dist/ → 部署到服务器 |
+
+## Docker 部署
+
+前端静态资源由 Nginx 托管，与后端共用 docker-compose：
+
+```yaml
+# docker-compose.yml (片段)
+nginx:
+  image: nginx:alpine
+  restart: always
+  ports:
+    - "80:80"
+    - "443:443"
+  volumes:
+    - ./nginx.conf:/etc/nginx/nginx.conf
+    - ./ssl:/etc/nginx/ssl
+    - ./www:/var/www/html    # 前端 dist/ 挂载到此
+  depends_on:
+    - server
+```
+
+```bash
+# 本地构建并部署
+pnpm build
+cp -r dist/ /path/to/www/
+docker compose up -d
 ```
 
 ## 安全
 
 - **认证**: JWT Token 存储于内存，Axios 拦截器自动附加 Authorization 头
 - **传输**: 所有 API 请求仅使用 GET/POST 方法
-- **AI Key**: 前端密码框输入，不明文回显，仅返回 `sk-****xxxx` 掩码
+- **AI Key**: 前端密码框输入，不明文回显，仅返回掩码预览
 - **HTTPS**: 生产环境强制安全连接
 - **XSS**: Naive UI 默认转义 + CSP 响应头
 
@@ -174,7 +170,8 @@ AppLayout
 
 - [x] 核心页面 (客户/项目/任务/需求 CRUD)
 - [x] 工时周网格录入
-- [ ] AI 周报生成交互 (Phase 4)
+- [x] CI/CD Pipeline
+- [ ] AI 周报生成交互 — DeepSeek 优先 (Phase 4)
 - [ ] 文件附件上传
 - [ ] 数据导入导出
 - [ ] 暗色模式
@@ -183,12 +180,13 @@ AppLayout
 ## 贡献指南
 
 1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/amazing-feature`)
-3. 确保代码通过 ESLint 检查
-4. 提交变更 (`git commit -m 'feat: add amazing feature'`)
-5. 推送到分支 (`git push origin feature/amazing-feature`)
-6. 创建 Pull Request
+2. 创建特性分支
+3. 确保通过 `pnpm typecheck && pnpm lint && pnpm test`
+4. 提交变更
+5. 创建 Pull Request
 
 ## 许可证
 
-本项目基于 Apache License 2.0 开源。详见 [LICENSE](LICENSE) 文件。
+本项目基于 Apache License 2.0 开源。详见 [LICENSE](LICENSE)。
+
+Copyright 2026 miaomiaopu
