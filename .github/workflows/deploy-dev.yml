@@ -27,11 +27,14 @@ jobs:
 
       - run: pnpm build
 
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.TC_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "${{ secrets.TC_HOST }}" >> ~/.ssh/known_hosts
+
       - name: Deploy to cloud server
-        uses: easingthemes/ssh-deploy@v6
-        with:
-          SSH_PRIVATE_KEY: ${{ secrets.TC_SSH_KEY }}
-          REMOTE_HOST: ${{ secrets.TC_HOST }}
-          REMOTE_USER: ${{ secrets.TC_USER }}
-          SOURCE: "dist/"
-          TARGET: "/opt/ipmp/www/"
+        run: |
+          rsync -rlzvci -e "ssh -i ~/.ssh/deploy_key" \
+            dist/ ${{ secrets.TC_USER }}@${{ secrets.TC_HOST }}:/opt/ipmp/www/
