@@ -12,24 +12,28 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@vicons/ionicons5": "^0.12.0",
     "@vueuse/core": "^11.0.0",
     "axios": "^1.7.0",
     "dayjs": "^1.11.0",
     "naive-ui": "^2.40.0",
     "pinia": "^2.2.0",
     "vue": "^3.5.0",
-    "vue-router": "^4.5.0",
-    "@vicons/ionicons5": "^0.12.0"
+    "vue-router": "^4.5.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.60.0",
+    "@typescript-eslint/parser": "^8.60.0",
     "@vitejs/plugin-vue": "^5.2.0",
     "eslint": "^9.0.0",
+    "eslint-plugin-vue": "^10.9.1",
     "typescript": "~5.7.0",
     "unplugin-auto-import": "^0.19.0",
     "unplugin-vue-components": "^0.28.0",
     "vite": "^6.2.0",
     "vitest": "^3.0.0",
+    "vue-eslint-parser": "^10.4.0",
     "vue-tsc": "^2.2.0"
   }
 }
