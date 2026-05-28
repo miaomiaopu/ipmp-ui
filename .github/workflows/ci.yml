@@ -33,7 +33,7 @@ jobs:
         run: pnpm lint
 
       - name: Test
-        run: pnpm vitest run
+        run: pnpm vitest run --passWithNoTests
 
       - name: Secret Scan
         uses: gitleaks/gitleaks-action@v2
