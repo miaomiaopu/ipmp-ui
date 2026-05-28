@@ -27,7 +27,7 @@ jobs:
       - run: pnpm build
 
       - name: Deploy to cloud server
-        uses: easingthemes/ssh-deploy@v5
+        uses: easingthemes/ssh-deploy@v6
         with:
           SSH_PRIVATE_KEY: ${{ secrets.TC_SSH_KEY }}
           REMOTE_HOST: ${{ secrets.TC_HOST }}
