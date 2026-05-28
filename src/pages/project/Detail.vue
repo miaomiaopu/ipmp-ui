@@ -30,38 +30,82 @@ onMounted(async () => {
 
 <template>
   <div>
-    <NButton quaternary size="small" @click="router.push('/projects')" style="margin-bottom: 16px">
-      <template #icon><NIcon><ArrowBackOutline /></NIcon></template>
+    <NButton
+      quaternary
+      size="small"
+      style="margin-bottom: 16px"
+      @click="router.push('/projects')"
+    >
+      <template #icon>
+        <NIcon><ArrowBackOutline /></NIcon>
+      </template>
       返回列表
     </NButton>
 
-    <div v-if="loading" style="color: var(--ink-muted)">加载中...</div>
+    <div
+      v-if="loading"
+      style="color: var(--ink-muted)"
+    >
+      加载中...
+    </div>
 
     <template v-else-if="project">
       <div class="page-header">
         <h1>{{ project.name }}</h1>
-        <span class="status-dot" :class="project.status" style="font-size: 13px">
+        <span
+          class="status-dot"
+          :class="project.status"
+          style="font-size: 13px"
+        >
           {{ statusLabel[project.status] || project.status }}
         </span>
       </div>
 
       <NCard :bordered="true">
-        <NDescriptions bordered :column="2" label-placement="left">
+        <NDescriptions
+          bordered
+          :column="2"
+          label-placement="left"
+        >
           <NDescriptionsItem label="项目编码">
             <span class="font-mono">{{ project.project_code }}</span>
           </NDescriptionsItem>
-          <NDescriptionsItem label="客户">{{ project.customer?.name || '-' }}</NDescriptionsItem>
-          <NDescriptionsItem label="项目经理">{{ project.manager?.display_name || '-' }}</NDescriptionsItem>
-          <NDescriptionsItem label="开始日期">{{ project.start_date || '-' }}</NDescriptionsItem>
-          <NDescriptionsItem label="上线日期">{{ project.go_live_date || '-' }}</NDescriptionsItem>
-          <NDescriptionsItem label="竣工日期">{{ project.completion_date || '-' }}</NDescriptionsItem>
-          <NDescriptionsItem label="关联任务">{{ project.task_count }} 个</NDescriptionsItem>
-          <NDescriptionsItem label="关联需求">{{ project.requirement_count }} 个</NDescriptionsItem>
-          <NDescriptionsItem label="描述" :span="2">{{ project.description || '-' }}</NDescriptionsItem>
+          <NDescriptionsItem label="客户">
+            {{ project.customer?.name || '-' }}
+          </NDescriptionsItem>
+          <NDescriptionsItem label="项目经理">
+            {{ project.manager?.display_name || '-' }}
+          </NDescriptionsItem>
+          <NDescriptionsItem label="开始日期">
+            {{ project.start_date || '-' }}
+          </NDescriptionsItem>
+          <NDescriptionsItem label="上线日期">
+            {{ project.go_live_date || '-' }}
+          </NDescriptionsItem>
+          <NDescriptionsItem label="竣工日期">
+            {{ project.completion_date || '-' }}
+          </NDescriptionsItem>
+          <NDescriptionsItem label="关联任务">
+            {{ project.task_count }} 个
+          </NDescriptionsItem>
+          <NDescriptionsItem label="关联需求">
+            {{ project.requirement_count }} 个
+          </NDescriptionsItem>
+          <NDescriptionsItem
+            label="描述"
+            :span="2"
+          >
+            {{ project.description || '-' }}
+          </NDescriptionsItem>
         </NDescriptions>
       </NCard>
     </template>
 
-    <div v-else style="color: var(--ink-muted)">项目不存在</div>
+    <div
+      v-else
+      style="color: var(--ink-muted)"
+    >
+      项目不存在
+    </div>
   </div>
 </template>

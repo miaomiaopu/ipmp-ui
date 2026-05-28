@@ -88,26 +88,51 @@ onMounted(fetchProjects)
   <div>
     <div class="page-header">
       <h1>项目管理</h1>
-      <NButton type="primary" @click="showCreate = true" size="small">新建项目</NButton>
+      <NButton
+        type="primary"
+        size="small"
+        @click="showCreate = true"
+      >
+        新建项目
+      </NButton>
     </div>
 
-    <NSpace style="margin-bottom: 16px" :size="8">
+    <NSpace
+      style="margin-bottom: 16px"
+      :size="8"
+    >
       <NInput
-        v-model:value="keyword" placeholder="搜索名称或编码..."
-        clearable style="width: 260px" size="small"
+        v-model:value="keyword"
+        placeholder="搜索名称或编码..."
+        clearable
+        style="width: 260px"
+        size="small"
         @keyup.enter="page=1; fetchProjects()"
       />
       <NSelect
-        v-model:value="statusFilter" :options="statusOptions"
-        placeholder="状态" clearable style="width: 120px" size="small"
+        v-model:value="statusFilter"
+        :options="statusOptions"
+        placeholder="状态"
+        clearable
+        style="width: 120px"
+        size="small"
         @update:value="page=1; fetchProjects()"
       />
-      <NButton size="small" @click="page=1; fetchProjects()">搜索</NButton>
+      <NButton
+        size="small"
+        @click="page=1; fetchProjects()"
+      >
+        搜索
+      </NButton>
     </NSpace>
 
     <div style="overflow-x: auto">
       <NDataTable
-        :columns="columns" :data="projects" :loading="loading" bordered size="small"
+        :columns="columns"
+        :data="projects"
+        :loading="loading"
+        bordered
+        size="small"
         :pagination="{
           page: page, pageSize: 20, itemCount: total,
           onChange(p: number) { page = p; fetchProjects() },
@@ -116,24 +141,64 @@ onMounted(fetchProjects)
       />
     </div>
 
-    <NModal v-model:show="showCreate" title="新建项目">
-      <NCard style="width: 480px; max-width: 90vw" :bordered="true" role="dialog">
+    <NModal
+      v-model:show="showCreate"
+      title="新建项目"
+    >
+      <NCard
+        style="width: 480px; max-width: 90vw"
+        :bordered="true"
+        role="dialog"
+      >
         <NForm :model="createForm">
-          <NFormItem label="项目编码" :show-feedback="false">
-            <NInput v-model:value="createForm.project_code" placeholder="PROJ-001" />
+          <NFormItem
+            label="项目编码"
+            :show-feedback="false"
+          >
+            <NInput
+              v-model:value="createForm.project_code"
+              placeholder="PROJ-001"
+            />
           </NFormItem>
-          <NFormItem label="项目名称" :show-feedback="false">
-            <NInput v-model:value="createForm.name" placeholder="项目名称" />
+          <NFormItem
+            label="项目名称"
+            :show-feedback="false"
+          >
+            <NInput
+              v-model:value="createForm.name"
+              placeholder="项目名称"
+            />
           </NFormItem>
-          <NFormItem label="状态" :show-feedback="false">
-            <NSelect v-model:value="createForm.status" :options="statusOptions" />
+          <NFormItem
+            label="状态"
+            :show-feedback="false"
+          >
+            <NSelect
+              v-model:value="createForm.status"
+              :options="statusOptions"
+            />
           </NFormItem>
-          <NFormItem label="描述" :show-feedback="false">
-            <NInput v-model:value="createForm.description" type="textarea" :rows="2" />
+          <NFormItem
+            label="描述"
+            :show-feedback="false"
+          >
+            <NInput
+              v-model:value="createForm.description"
+              type="textarea"
+              :rows="2"
+            />
           </NFormItem>
           <NSpace justify="end">
-            <NButton @click="showCreate = false">取消</NButton>
-            <NButton type="primary" :loading="saving" @click="handleCreate">创建</NButton>
+            <NButton @click="showCreate = false">
+              取消
+            </NButton>
+            <NButton
+              type="primary"
+              :loading="saving"
+              @click="handleCreate"
+            >
+              创建
+            </NButton>
           </NSpace>
         </NForm>
       </NCard>

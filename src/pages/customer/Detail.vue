@@ -30,36 +30,78 @@ onMounted(async () => {
 
 <template>
   <div>
-    <NButton quaternary size="small" @click="router.push('/customers')" style="margin-bottom: 16px">
-      <template #icon><NIcon><ArrowBackOutline /></NIcon></template>
+    <NButton
+      quaternary
+      size="small"
+      style="margin-bottom: 16px"
+      @click="router.push('/customers')"
+    >
+      <template #icon>
+        <NIcon><ArrowBackOutline /></NIcon>
+      </template>
       返回列表
     </NButton>
 
-    <div v-if="loading" style="color: var(--ink-muted)">加载中...</div>
+    <div
+      v-if="loading"
+      style="color: var(--ink-muted)"
+    >
+      加载中...
+    </div>
 
     <template v-else-if="customer">
       <div class="page-header">
         <h1>{{ customer.name }}</h1>
-        <span class="status-dot" :class="customer.status">
+        <span
+          class="status-dot"
+          :class="customer.status"
+        >
           {{ customer.status === 'active' ? '正常' : '停用' }}
         </span>
       </div>
 
       <NCard :bordered="true">
-        <NDescriptions bordered :column="2" label-placement="left">
+        <NDescriptions
+          bordered
+          :column="2"
+          label-placement="left"
+        >
           <NDescriptionsItem label="客户编码">
             <span class="font-mono">{{ customer.customer_code }}</span>
           </NDescriptionsItem>
-          <NDescriptionsItem label="关联项目">{{ projectCount }} 个</NDescriptionsItem>
-          <NDescriptionsItem label="联系人">{{ customer.contact_person || '-' }}</NDescriptionsItem>
-          <NDescriptionsItem label="电话">{{ customer.contact_phone || '-' }}</NDescriptionsItem>
-          <NDescriptionsItem label="邮箱">{{ customer.contact_email || '-' }}</NDescriptionsItem>
-          <NDescriptionsItem label="地址" :span="2">{{ customer.address || '-' }}</NDescriptionsItem>
-          <NDescriptionsItem label="备注" :span="2">{{ customer.notes || '-' }}</NDescriptionsItem>
+          <NDescriptionsItem label="关联项目">
+            {{ projectCount }} 个
+          </NDescriptionsItem>
+          <NDescriptionsItem label="联系人">
+            {{ customer.contact_person || '-' }}
+          </NDescriptionsItem>
+          <NDescriptionsItem label="电话">
+            {{ customer.contact_phone || '-' }}
+          </NDescriptionsItem>
+          <NDescriptionsItem label="邮箱">
+            {{ customer.contact_email || '-' }}
+          </NDescriptionsItem>
+          <NDescriptionsItem
+            label="地址"
+            :span="2"
+          >
+            {{ customer.address || '-' }}
+          </NDescriptionsItem>
+          <NDescriptionsItem
+            label="备注"
+            :span="2"
+          >
+            {{ customer.notes || '-' }}
+          </NDescriptionsItem>
         </NDescriptions>
       </NCard>
     </template>
 
-    <div v-else style="color: var(--ink-muted)">客户不存在</div>
+    <div
+      v-else
+      style="color: var(--ink-muted)"
+    >
+      客户不存在
+    </div>
   </div>
 </template>

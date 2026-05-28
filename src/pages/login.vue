@@ -47,8 +47,14 @@ async function handleLogin() {
         </div>
       </div>
 
-      <NCard :bordered="true" content-style="padding: 28px 24px">
-        <NForm :model="form" @submit.prevent="handleLogin">
+      <NCard
+        :bordered="true"
+        content-style="padding: 28px 24px"
+      >
+        <NForm
+          :model="form"
+          @submit.prevent="handleLogin"
+        >
           <NFormItem>
             <NInput
               v-model:value="form.username"
@@ -72,8 +78,8 @@ async function handleLogin() {
             block
             size="large"
             :loading="loading"
-            @click="handleLogin"
             style="margin-top: 4px"
+            @click="handleLogin"
           >
             登录
           </NButton>

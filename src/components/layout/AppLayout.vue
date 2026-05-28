@@ -71,35 +71,64 @@ function handleLogout() {
       style="height: 52px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px"
     >
       <div style="display: flex; align-items: center; gap: 10px">
-        <NButton v-if="!showSidebar" quaternary size="small" @click="drawerOpen = true">
-          <template #icon><NIcon><MenuOutline /></NIcon></template>
+        <NButton
+          v-if="!showSidebar"
+          quaternary
+          size="small"
+          @click="drawerOpen = true"
+        >
+          <template #icon>
+            <NIcon><MenuOutline /></NIcon>
+          </template>
         </NButton>
         <span style="font-weight: 700; font-size: 16px; letter-spacing: -0.3px; color: var(--ink)">
           IPMP
         </span>
-        <span class="hide-mobile" style="color: var(--ink-muted); font-size: 12px">
+        <span
+          class="hide-mobile"
+          style="color: var(--ink-muted); font-size: 12px"
+        >
           项目管理系统
         </span>
       </div>
 
-      <NSpace :size="4" align="center">
-        <NButton quaternary size="small" @click="theme.toggle()">
+      <NSpace
+        :size="4"
+        align="center"
+      >
+        <NButton
+          quaternary
+          size="small"
+          @click="theme.toggle()"
+        >
           <template #icon>
             <NIcon><SunnyOutline v-if="theme.mode === 'dark'" /><MoonOutline v-else /></NIcon>
           </template>
         </NButton>
 
-        <span class="hide-mobile" style="font-size: 13px; color: var(--ink-muted)">
+        <span
+          class="hide-mobile"
+          style="font-size: 13px; color: var(--ink-muted)"
+        >
           {{ auth.user?.display_name || auth.user?.username }}
         </span>
-        <NButton quaternary size="small" @click="handleLogout">
-          <template #icon><NIcon><LogOutOutline /></NIcon></template>
+        <NButton
+          quaternary
+          size="small"
+          @click="handleLogout"
+        >
+          <template #icon>
+            <NIcon><LogOutOutline /></NIcon>
+          </template>
           <span class="hide-mobile">退出</span>
         </NButton>
       </NSpace>
     </NLayoutHeader>
 
-    <NLayout has-sider style="flex: 1; overflow: hidden">
+    <NLayout
+      has-sider
+      style="flex: 1; overflow: hidden"
+    >
       <!-- PC/Tablet Sidebar -->
       <div
         v-if="showSidebar"
@@ -136,8 +165,8 @@ function handleLogout() {
       "
     >
       <div
-        v-for="tab in mobileTabOptions" :key="tab.key"
-        @click="navTo(tab.key)"
+        v-for="tab in mobileTabOptions"
+        :key="tab.key"
         :style="{
           flex: 1, display: 'flex', flexDirection: 'column',
           alignItems: 'center', justifyContent: 'center', gap: '2px',
@@ -145,6 +174,7 @@ function handleLogout() {
           color: currentKey === tab.key ? 'var(--accent)' : 'var(--ink-muted)',
           fontWeight: currentKey === tab.key ? 600 : 400,
         }"
+        @click="navTo(tab.key)"
       >
         <component :is="tab.icon" />
         <span style="font-size: 11px">{{ tab.label }}</span>
@@ -152,8 +182,15 @@ function handleLogout() {
     </div>
 
     <!-- Mobile Drawer -->
-    <NDrawer v-model:show="drawerOpen" :width="240" placement="left">
-      <NDrawerContent title="导航" body-content-style="padding: 8px 0">
+    <NDrawer
+      v-model:show="drawerOpen"
+      :width="240"
+      placement="left"
+    >
+      <NDrawerContent
+        title="导航"
+        body-content-style="padding: 8px 0"
+      >
         <NMenu
           :value="currentKey"
           :options="menuOptions"
