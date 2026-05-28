@@ -5,7 +5,7 @@
 ![Naive UI](https://img.shields.io/badge/Naive%20UI-2.x-18a058)
 ![Vite](https://img.shields.io/badge/Vite-6.x-646CFF?logo=vite)
 ![CI](https://img.shields.io/badge/CI-typecheck%20%7C%20lint%20%7C%20build-green?logo=githubactions)
-![Version](https://img.shields.io/badge/Version-0.0.1-blue)
+![Version](https://img.shields.io/badge/Version-0.1.0-blue)
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue)
 
 IPMP（Intelligent Project Management Platform）前端应用，提供项目管理、工时录入、周报查看等交互界面。AI 周报优先支持 DeepSeek。
@@ -130,61 +130,32 @@ AppLayout
 | Pipeline | 触发 | 内容 |
 |----------|------|------|
 | **CI** | push / PR to main | typecheck → lint → test → gitleaks → build |
-| **CD** | tag `v*` / 手动 | 构建 dist/ → 部署到服务器 |
+| **CD-Dev** | tag `dev*` | build → rsync dist/ → 云服务器 Nginx |
+| **Pages** | push to main | build → deploy to GitHub Pages |
 
-## Docker 部署
+## 部署
 
-前端静态资源由 Nginx 托管，与后端共用 docker-compose：
+前端静态资源与后端共用 docker-compose，Nginx 反向代理：
 
-```yaml
-# docker-compose.yml (片段)
-nginx:
-  image: nginx:alpine
-  restart: always
-  ports:
-    - "80:80"
-    - "443:443"
-  volumes:
-    - ./nginx.conf:/etc/nginx/nginx.conf
-    - ./ssl:/etc/nginx/ssl
-    - ./www:/var/www/html    # 前端 dist/ 挂载到此
-  depends_on:
-    - server
 ```
-
-```bash
-# 本地构建并部署
-pnpm build
-cp -r dist/ /path/to/www/
-docker compose up -d
+/opt/ipmp/www/  ← CD-Dev 自动部署 dist/
+    ↓ (docker-compose 挂载)
+/var/www/html   ← nginx container root
 ```
 
 ## 安全
 
-- **认证**: JWT Token 存储于内存，Axios 拦截器自动附加 Authorization 头
+- **认证**: JWT Token 存储于 Pinia store，Axios 拦截器自动附加 Authorization 头
 - **传输**: 所有 API 请求仅使用 GET/POST 方法
 - **AI Key**: 前端密码框输入，不明文回显，仅返回掩码预览
-- **HTTPS**: 生产环境强制安全连接
 - **XSS**: Naive UI 默认转义 + CSP 响应头
 
 ## 扩展计划
 
-- [x] 核心页面 (客户/项目/任务/需求 CRUD)
-- [x] 工时周网格录入
-- [x] CI/CD Pipeline
-- [ ] AI 周报生成交互 — DeepSeek 优先 (Phase 4)
-- [ ] 文件附件上传
-- [ ] 数据导入导出
-- [ ] 暗色模式
-- [ ] 通知系统
-
-## 贡献指南
-
-1. Fork 本仓库
-2. 创建特性分支
-3. 确保通过 `pnpm typecheck && pnpm lint && pnpm test`
-4. 提交变更
-5. 创建 Pull Request
+- [x] 客户/项目页面 + 双主题 + 响应式 + CI/CD (Phase 1)
+- [ ] 任务管理 + 需求跟踪 + 工时录入 + 个人设置 (Phase 2)
+- [ ] 周报查看 + AI 生成交互 (Phase 3-4)
+- [ ] 暗色模式 + 通知系统 (Phase 5)
 
 ## 许可证
 
