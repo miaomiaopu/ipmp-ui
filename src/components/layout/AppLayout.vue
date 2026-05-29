@@ -31,17 +31,29 @@ function onResize() { windowWidth.value = window.innerWidth }
 onMounted(() => window.addEventListener('resize', onResize))
 onBeforeUnmount(() => window.removeEventListener('resize', onResize))
 
-const menuOptions: MenuOption[] = [
+const isAdmin = computed(() => auth.user?.role === 'admin')
+
+const allMenuOptions: MenuOption[] = [
   { label: '仪表盘',   key: '/dashboard',   icon: () => h(NIcon, null, () => h(BarChartOutline)) },
   { label: '客户管理', key: '/customers',    icon: () => h(NIcon, null, () => h(PeopleOutline)) },
   { label: '项目管理', key: '/projects',     icon: () => h(NIcon, null, () => h(FolderOpenOutline)) },
 ]
 
-const mobileTabOptions = [
-  { label: '概览', key: '/dashboard', icon: () => h(NIcon, null, () => h(BarChartOutline)) },
-  { label: '客户', key: '/customers',  icon: () => h(NIcon, null, () => h(PeopleOutline)) },
-  { label: '项目', key: '/projects',   icon: () => h(NIcon, null, () => h(FolderOpenOutline)) },
-]
+const menuOptions = computed(() =>
+  isAdmin.value
+    ? allMenuOptions.filter(m => m.key === '/dashboard')
+    : allMenuOptions,
+)
+
+const mobileTabOptions = computed(() =>
+  isAdmin.value
+    ? [{ label: '概览', key: '/dashboard', icon: () => h(NIcon, null, () => h(BarChartOutline)) }]
+    : [
+        { label: '概览', key: '/dashboard', icon: () => h(NIcon, null, () => h(BarChartOutline)) },
+        { label: '客户', key: '/customers',  icon: () => h(NIcon, null, () => h(PeopleOutline)) },
+        { label: '项目', key: '/projects',   icon: () => h(NIcon, null, () => h(FolderOpenOutline)) },
+      ],
+)
 
 const currentKey = computed(() => {
   const p = route.path
