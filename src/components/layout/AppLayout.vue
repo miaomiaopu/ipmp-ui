@@ -56,7 +56,11 @@ const menuOptions = computed(() => isAdmin.value ? adminMenuOptions : userMenuOp
 
 const mobileTabOptions = computed(() =>
   isAdmin.value
-    ? [{ label: '概览', key: '/dashboard', icon: I(BarChartOutline) }]
+    ? [
+        { label: '概览', key: '/dashboard',  icon: I(BarChartOutline) },
+        { label: '用户', key: '/users',      icon: I(PersonAddOutline) },
+        { label: '设置', key: '/settings',   icon: I(SettingsOutline) },
+      ]
     : [
         { label: '概览', key: '/dashboard',   icon: I(BarChartOutline) },
         { label: '客户', key: '/customers',    icon: I(PeopleOutline) },
