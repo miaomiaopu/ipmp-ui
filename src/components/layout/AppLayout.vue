@@ -8,7 +8,8 @@ import {
 import {
   PeopleOutline, FolderOpenOutline,
   LogOutOutline, SunnyOutline, MoonOutline, MenuOutline,
-  BarChartOutline,
+  BarChartOutline, ListOutline, CheckmarkCircleOutline,
+  TimerOutline, SettingsOutline, PersonAddOutline,
 } from '@vicons/ionicons5'
 import { useAuthStore } from '@/store/auth'
 import { useThemeStore } from '@/store/theme'
@@ -33,32 +34,46 @@ onBeforeUnmount(() => window.removeEventListener('resize', onResize))
 
 const isAdmin = computed(() => auth.user?.role === 'admin')
 
-const allMenuOptions: MenuOption[] = [
-  { label: '仪表盘',   key: '/dashboard',   icon: () => h(NIcon, null, () => h(BarChartOutline)) },
-  { label: '客户管理', key: '/customers',    icon: () => h(NIcon, null, () => h(PeopleOutline)) },
-  { label: '项目管理', key: '/projects',     icon: () => h(NIcon, null, () => h(FolderOpenOutline)) },
+const I = (icon: any) => () => h(NIcon, null, () => h(icon))
+
+const adminMenuOptions: MenuOption[] = [
+  { label: '仪表盘',    key: '/dashboard', icon: I(BarChartOutline) },
+  { label: '用户管理',  key: '/users',     icon: I(PersonAddOutline) },
+  { label: '个人设置',  key: '/settings',  icon: I(SettingsOutline) },
 ]
 
-const menuOptions = computed(() =>
-  isAdmin.value
-    ? allMenuOptions.filter(m => m.key === '/dashboard')
-    : allMenuOptions,
-)
+const userMenuOptions: MenuOption[] = [
+  { label: '仪表盘',    key: '/dashboard',    icon: I(BarChartOutline) },
+  { label: '客户管理',  key: '/customers',     icon: I(PeopleOutline) },
+  { label: '项目管理',  key: '/projects',      icon: I(FolderOpenOutline) },
+  { label: '任务管理',  key: '/tasks',         icon: I(ListOutline) },
+  { label: '需求管理',  key: '/requirements',  icon: I(CheckmarkCircleOutline) },
+  { label: '工时录入',  key: '/work-logs',     icon: I(TimerOutline) },
+  { label: '个人设置',  key: '/settings',      icon: I(SettingsOutline) },
+]
+
+const menuOptions = computed(() => isAdmin.value ? adminMenuOptions : userMenuOptions)
 
 const mobileTabOptions = computed(() =>
   isAdmin.value
-    ? [{ label: '概览', key: '/dashboard', icon: () => h(NIcon, null, () => h(BarChartOutline)) }]
+    ? [{ label: '概览', key: '/dashboard', icon: I(BarChartOutline) }]
     : [
-        { label: '概览', key: '/dashboard', icon: () => h(NIcon, null, () => h(BarChartOutline)) },
-        { label: '客户', key: '/customers',  icon: () => h(NIcon, null, () => h(PeopleOutline)) },
-        { label: '项目', key: '/projects',   icon: () => h(NIcon, null, () => h(FolderOpenOutline)) },
+        { label: '概览', key: '/dashboard',   icon: I(BarChartOutline) },
+        { label: '客户', key: '/customers',    icon: I(PeopleOutline) },
+        { label: '项目', key: '/projects',     icon: I(FolderOpenOutline) },
+        { label: '工时', key: '/work-logs',    icon: I(TimerOutline) },
       ],
 )
 
 const currentKey = computed(() => {
   const p = route.path
-  if (p.startsWith('/customers')) return '/customers'
-  if (p.startsWith('/projects'))  return '/projects'
+  if (p.startsWith('/users'))         return '/users'
+  if (p.startsWith('/customers'))     return '/customers'
+  if (p.startsWith('/projects'))      return '/projects'
+  if (p.startsWith('/tasks'))         return '/tasks'
+  if (p.startsWith('/requirements'))  return '/requirements'
+  if (p.startsWith('/work-logs'))     return '/work-logs'
+  if (p.startsWith('/settings'))      return '/settings'
   return '/dashboard'
 })
 

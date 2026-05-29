@@ -42,6 +42,42 @@ export const routes: RouteRecordRaw[] = [
         component: () => import('@/pages/project/Detail.vue'),
         meta: { title: '项目详情' },
       },
+      {
+        path: 'users',
+        name: 'UserList',
+        component: () => import('@/pages/user/List.vue'),
+        meta: { title: '用户管理' },
+      },
+      {
+        path: 'tasks',
+        name: 'TaskList',
+        component: () => import('@/pages/task/List.vue'),
+        meta: { title: '任务管理' },
+      },
+      {
+        path: 'tasks/:id',
+        name: 'TaskDetail',
+        component: () => import('@/pages/task/Detail.vue'),
+        meta: { title: '任务详情' },
+      },
+      {
+        path: 'requirements',
+        name: 'RequirementList',
+        component: () => import('@/pages/requirement/List.vue'),
+        meta: { title: '需求管理' },
+      },
+      {
+        path: 'work-logs',
+        name: 'WorkLogPage',
+        component: () => import('@/pages/work-log/Index.vue'),
+        meta: { title: '工时录入' },
+      },
+      {
+        path: 'settings',
+        name: 'Settings',
+        component: () => import('@/pages/settings/Index.vue'),
+        meta: { title: '个人设置' },
+      },
     ],
   },
 ]
