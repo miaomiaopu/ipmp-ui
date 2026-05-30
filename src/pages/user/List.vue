@@ -2,7 +2,7 @@
 import { ref, onMounted, h } from 'vue'
 import { NDataTable, NButton, NSpace, NInput, NModal, NCard, NForm, NFormItem, NSelect, NPopconfirm, useMessage } from 'naive-ui'
 import type { DataTableColumns } from 'naive-ui'
-import { getUsers, createUser, deleteUser, resetPassword } from '@/api/user'
+import { getUsers, createUser, deleteUser, resetPassword, updateUser } from '@/api/user'
 
 const message = useMessage()
 const users = ref<any[]>([])
@@ -17,11 +17,12 @@ const saving = ref(false)
 const columns: DataTableColumns<any> = [
   { title: '用户名', key: 'username', width: 120 },
   { title: '显示名', key: 'display_name', width: 120 },
-  { title: '角色', key: 'role', width: 80, render(r: any) { return r.role === 'admin' ? '管理员' : r.role === 'manager' ? '经理' : '用户' } },
+  { title: '角色', key: 'role', width: 80, render(r: any) { return r.role === 'admin' ? '管理员' : '用户' } },
   { title: '状态', key: 'status', width: 60, render(r: any) { return r.status === 'active' ? '正常' : '停用' } },
   {
-    title: '操作', key: 'actions', width: 180, render(row: any) {
+    title: '操作', key: 'actions', width: 200, render(row: any) {
       return h(NSpace, { size: 4 }, { default: () => [
+        h(NButton, { size: 'tiny', quaternary: true, onClick: () => handleToggleStatus(row) }, { default: () => row.status === 'active' ? '停用' : '启用' }),
         h(NPopconfirm, { onPositiveClick: () => handleResetPwd(row) }, {
           trigger: () => h(NButton, { size: 'tiny', quaternary: true }, { default: () => '重置密码' }),
           default: () => '确定重置密码？',
@@ -59,6 +60,12 @@ async function handleResetPwd(row: any) {
     const r = await resetPassword(row.id, { new_password: 'Abc12345' })
     message.success(`密码已重置为: ${r.data.data.new_password || 'Abc12345'}`)
   } catch { message.error('重置失败') }
+}
+
+async function handleToggleStatus(row: any) {
+  const newStatus = row.status === 'active' ? 'inactive' : 'active'
+  try { await updateUser(row.id, { status: newStatus }); message.success(newStatus === 'active' ? '已启用' : '已停用'); fetch() }
+  catch { message.error('操作失败') }
 }
 
 async function handleDelete(row: any) {
