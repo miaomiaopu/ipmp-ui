@@ -12,7 +12,7 @@ const page = ref(1)
 const typeFilter = ref<string | null>(null)
 const keyword = ref('')
 const showCreate = ref(false)
-const createForm = ref({ req_type: 'project', title: '', description: '', priority: 'medium', submitter: '' })
+const createForm = ref({ req_type: 'project', title: '', description: '', priority: 'medium' })
 const saving = ref(false)
 
 const statusLabel: Record<string, string> = { pending: '待处理', approved: '已批准', rejected: '已拒绝', in_progress: '实施中', done: '已完成' }
@@ -21,7 +21,7 @@ const columns: DataTableColumns<any> = [
   { title: '标题', key: 'title', ellipsis: { tooltip: true } },
   { title: '类型', key: 'req_type', width: 80, render(r: any) { return r.req_type === 'project' ? '项目' : '售后' } },
   { title: '状态', key: 'status', width: 70, render(r: any) { return statusLabel[r.status] } },
-  { title: '提交人', key: 'submitter', width: 100 },
+  { title: '编号', key: 'requirement_code', width: 80 },
   {
     title: '操作', key: 'actions', width: 100, render(row: any) {
       return h(NPopconfirm, { onPositiveClick: () => handleDelete(row) }, {
@@ -147,16 +147,10 @@ onMounted(fetch)
               :options="[{label:'低',value:'low'},{label:'中',value:'medium'},{label:'高',value:'high'}]"
             />
           </NFormItem>
-          <NFormItem
-            label="提交人"
-            :show-feedback="false"
+          <NSpace
+            justify="end"
+            style="margin-top: 12px"
           >
-            <NInput
-              v-model:value="createForm.submitter"
-              placeholder="如：客户方-张三"
-            />
-          </NFormItem>
-          <NSpace justify="end">
             <NButton @click="showCreate = false">
               取消
             </NButton><NButton

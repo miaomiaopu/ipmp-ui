@@ -154,7 +154,7 @@ onMounted(fetch)
           >
             <NSelect
               v-model:value="createForm.role"
-              :options="[{label:'管理员',value:'admin'},{label:'经理',value:'manager'},{label:'用户',value:'user'}]"
+              :options="[{label:'管理员',value:'admin'},{label:'用户',value:'user'}]"
             />
           </NFormItem>
           <NSpace justify="end">

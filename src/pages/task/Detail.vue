@@ -55,17 +55,14 @@ onMounted(async () => {
           <NDescriptionsItem label="优先级">
             {{ task.priority }}
           </NDescriptionsItem>
-          <NDescriptionsItem label="负责人">
-            {{ task.assignee?.display_name || '-' }}
-          </NDescriptionsItem>
-          <NDescriptionsItem label="预估工时">
-            {{ task.estimated_hours }}h
-          </NDescriptionsItem>
           <NDescriptionsItem label="截止日期">
             {{ task.due_date || '-' }}
           </NDescriptionsItem>
           <NDescriptionsItem label="关联项目">
             {{ task.project?.name || '-' }}
+          </NDescriptionsItem>
+          <NDescriptionsItem label="关联客户">
+            {{ task.customer?.name || '-' }}
           </NDescriptionsItem>
           <NDescriptionsItem
             label="描述"

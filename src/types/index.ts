@@ -61,7 +61,7 @@ export interface Project {
   manager?: UserBrief
 }
 
-// 任务
+// 任务 (v0.2: 去assignee,去工时)
 export interface Task {
   id: string
   task_type: string
@@ -69,29 +69,31 @@ export interface Task {
   description: string
   project_id: string | null
   customer_id: string | null
-  assignee_id: string | null
   status: string
   priority: string
   due_date: string | null
-  estimated_hours: number
-  actual_hours: number
   created_at: string
   updated_at: string
+  project?: Project
+  customer?: Customer
 }
 
-// 需求
+// 需求 (v0.2: 去submitter,增requirement_code/scheduled_date)
 export interface Requirement {
   id: string
   req_type: string
+  requirement_code: string
   title: string
   description: string
   project_id: string | null
   customer_id: string | null
   priority: string
   status: string
-  submitter: string
+  scheduled_date: string | null
   created_at: string
   updated_at: string
+  project?: Project
+  customer?: Customer
 }
 
 // 工时记录
