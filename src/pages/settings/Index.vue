@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { NCard, NForm, NFormItem, NInput, NButton, NSelect, NSpace, useMessage } from 'naive-ui'
 import { changePassword } from '@/api/user'
+import { useAuthStore } from '@/store/auth'
 import { getAIConfig, updateAIConfig, deleteAIConfig } from '@/api/aiConfig'
 
 const message = useMessage()
+const auth = useAuthStore()
+const isAdmin = computed(() => auth.user?.role === 'admin')
 
 // Password
 const pwdForm = ref({ old_password: '', new_password: '', confirm: '' })
@@ -100,8 +103,9 @@ onMounted(loadAIConfig)
       </NForm>
     </NCard>
 
-    <!-- AI Config -->
+    <!-- AI Config (非 admin 可见) -->
     <NCard
+      v-if="!isAdmin"
       title="AI 配置"
       :bordered="true"
     >
