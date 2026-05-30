@@ -12,6 +12,7 @@ const total = ref(0)
 const page = ref(1)
 const showCreate = ref(false)
 const createForm = ref({ task_id: null as string | null, log_date: new Date().toISOString().slice(0, 10), hours: '8', description: '' })
+const todayTotal = ref(0)
 const saving = ref(false)
 const taskOptions = ref<{ label: string; value: string }[]>([])
 
@@ -39,6 +40,10 @@ async function fetch() {
 
 async function fetchTasks() { try { const r = await getTasks({ page_size: 100 }); taskOptions.value = (r.data.data || []).map((t: any) => ({ label: t.title, value: t.id })) } catch {} }
 
+async function checkTodayHours() {
+  try { const r = await getWorkLogs({ page_size: 100, start_date: createForm.value.log_date, end_date: createForm.value.log_date }); todayTotal.value = (r.data.data || []).reduce((s: number, w: any) => s + w.hours, 0) } catch { todayTotal.value = 0 }
+}
+
 async function handleCreate() {
   saving.value = true
   try { await createWorkLog({ ...createForm.value, hours: parseFloat(createForm.value.hours) }); showCreate.value = false; message.success('录入成功'); fetch() }
@@ -57,7 +62,7 @@ onMounted(() => { fetch(); fetchTasks() })
       <h1>工时录入</h1><NButton
         type="primary"
         size="small"
-        @click="showCreate = true"
+        @click="showCreate = true; checkTodayHours()"
       >
         录入工时
       </NButton>
@@ -100,6 +105,12 @@ onMounted(() => { fetch(); fetchTasks() })
               placeholder="0.5-24"
             />
           </NFormItem>
+          <p
+            v-if="todayTotal > 0"
+            style="font-size: 12px; color: var(--warning); margin: -8px 0 8px 0"
+          >
+            今日已填报 {{ todayTotal }}h
+          </p>
           <NFormItem
             label="关联任务"
             :show-feedback="false"
