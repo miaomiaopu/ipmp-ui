@@ -73,6 +73,12 @@ export const routes: RouteRecordRaw[] = [
         meta: { title: '工时录入' },
       },
       {
+        path: 'work-logs/overview',
+        name: 'WorkLogOverview',
+        component: () => import('@/pages/work-log/Overview.vue'),
+        meta: { title: '工时概览' },
+      },
+      {
         path: 'settings',
         name: 'Settings',
         component: () => import('@/pages/settings/Index.vue'),
