@@ -13,6 +13,7 @@ const total = ref(0)
 const page = ref(1)
 const typeFilter = ref<string | null>(null)
 const statusFilter = ref<string | null>(null)
+const dueBefore = ref('')
 const keyword = ref('')
 const showCreate = ref(false)
 const createForm = ref({ task_type: 'project', title: '', description: '', priority: 'medium' })
@@ -41,7 +42,7 @@ const columns: DataTableColumns<any> = [
 
 async function fetch() {
   loading.value = true
-  try { const r = await getTasks({ page: page.value, task_type: typeFilter.value, status: statusFilter.value, keyword: keyword.value }); tasks.value = r.data.data; total.value = r.data.pagination?.total || 0 }
+  try { const r = await getTasks({ page: page.value, task_type: typeFilter.value, status: statusFilter.value, keyword: keyword.value, due_before: dueBefore.value }); tasks.value = r.data.data; total.value = r.data.pagination?.total || 0 }
   catch { message.error('获取列表失败') }
   finally { loading.value = false }
 }
@@ -98,6 +99,15 @@ onMounted(fetch)
         style="width: 100px"
         size="small"
         @update:value="page=1; fetch()"
+      />
+      <NInput
+        v-model:value="dueBefore"
+        type="text"
+        placeholder="截止日期≤"
+        clearable
+        style="width: 130px"
+        size="small"
+        @keyup.enter="page=1; fetch()"
       />
       <NButton
         size="small"
