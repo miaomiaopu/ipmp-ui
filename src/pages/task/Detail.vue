@@ -10,6 +10,10 @@ const task = ref<any>(null); const loading = ref(true)
 const typeLabel: Record<string, string> = { project: '项目任务', customer: '客户任务', daily: '日常任务' }
 const statusLabel: Record<string, string> = { todo: '待办', in_progress: '进行中', done: '已完成' }
 
+function formatDate(value: string | null | undefined) {
+  return value ? value.slice(0, 10) : '-'
+}
+
 onMounted(async () => {
   try { const r = await getTask(route.params.id as string); task.value = r.data.data }
   catch { message.error('加载失败') }
@@ -56,7 +60,7 @@ onMounted(async () => {
             {{ task.priority }}
           </NDescriptionsItem>
           <NDescriptionsItem label="截止日期">
-            {{ task.due_date || '-' }}
+            {{ formatDate(task.due_date) }}
           </NDescriptionsItem>
           <NDescriptionsItem label="关联项目">
             {{ task.project?.name || '-' }}

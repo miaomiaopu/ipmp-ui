@@ -7,6 +7,7 @@ import { NIcon } from 'naive-ui'
 import { useMessage } from 'naive-ui'
 import type { Project } from '@/types'
 import { getProject } from '@/api/project'
+import { projectStatusLabel } from '@/utils/entityForms'
 
 const route = useRoute()
 const router = useRouter()
@@ -14,7 +15,9 @@ const message = useMessage()
 const project = ref<(Project & { task_count: number; requirement_count: number }) | null>(null)
 const loading = ref(true)
 
-const statusLabel: Record<string, string> = { planning: '立项', in_progress: '实施中', online: '已上线', completed: '已竣工' }
+function formatDate(value: string | null | undefined) {
+  return value ? value.slice(0, 10) : '-'
+}
 
 onMounted(async () => {
   try {
@@ -57,7 +60,7 @@ onMounted(async () => {
           :class="project.status"
           style="font-size: 13px"
         >
-          {{ statusLabel[project.status] || project.status }}
+          {{ projectStatusLabel[project.status] || project.status }}
         </span>
       </div>
 
@@ -77,13 +80,13 @@ onMounted(async () => {
             {{ project.manager?.display_name || '-' }}
           </NDescriptionsItem>
           <NDescriptionsItem label="开始日期">
-            {{ project.start_date || '-' }}
+            {{ formatDate(project.start_date) }}
           </NDescriptionsItem>
           <NDescriptionsItem label="上线日期">
-            {{ project.go_live_date || '-' }}
+            {{ formatDate(project.go_live_date) }}
           </NDescriptionsItem>
           <NDescriptionsItem label="竣工日期">
-            {{ project.completion_date || '-' }}
+            {{ formatDate(project.completion_date) }}
           </NDescriptionsItem>
           <NDescriptionsItem label="关联任务">
             {{ project.task_count }} 个

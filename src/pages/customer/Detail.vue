@@ -7,6 +7,7 @@ import { NIcon } from 'naive-ui'
 import { useMessage } from 'naive-ui'
 import type { Customer } from '@/types'
 import { getCustomer } from '@/api/customer'
+import { maskAddress, maskEmail, maskName, maskPhone } from '@/utils/entityForms'
 
 const route = useRoute()
 const router = useRouter()
@@ -14,10 +15,8 @@ const message = useMessage()
 const customer = ref<Customer | null>(null)
 const projectCount = ref(0)
 const loading = ref(true)
-const showMasked = ref(true)
+const isMasked = ref(true)
 
-function maskName(name: string) { if (!name) return '-'; return name[0] + '*'.repeat(name.length - 1) }
-function maskPhone(p: string) { if (!p || p.length < 4) return p || '-'; return p.slice(0, 3) + '****' + p.slice(-4) }
 function copyToClip(text: string, label: string) { navigator.clipboard.writeText(text); message.success(`${label}已复制`) }
 
 onMounted(async () => {
@@ -63,12 +62,12 @@ onMounted(async () => {
           <NButton
             size="tiny"
             quaternary
-            @click="showMasked = !showMasked"
+            @click="isMasked = !isMasked"
           >
             <template #icon>
-              <NIcon><EyeOutline v-if="showMasked" /><EyeOffOutline v-else /></NIcon>
+              <NIcon><EyeOutline v-if="isMasked" /><EyeOffOutline v-else /></NIcon>
             </template>
-            {{ showMasked ? '显示' : '隐藏' }}
+            {{ isMasked ? '显示' : '隐藏' }}
           </NButton>
         </NSpace>
       </div>
@@ -93,25 +92,25 @@ onMounted(async () => {
             <span
               style="cursor:pointer"
               @click="copyToClip(customer.contact_person,'姓名')"
-            >{{ showMasked ? maskName(customer.contact_person) : customer.contact_person || '-' }}</span>
+            >{{ isMasked ? maskName(customer.contact_person) : customer.contact_person || '-' }}</span>
           </NDescriptionsItem>
           <NDescriptionsItem label="电话">
             <span
               style="cursor:pointer"
               @click="copyToClip(customer.contact_phone,'电话')"
-            >{{ showMasked ? maskPhone(customer.contact_phone) : customer.contact_phone || '-' }}</span>
+            >{{ isMasked ? maskPhone(customer.contact_phone) : customer.contact_phone || '-' }}</span>
           </NDescriptionsItem>
           <NDescriptionsItem label="邮箱">
             <span
               style="cursor:pointer"
               @click="copyToClip(customer.contact_email,'邮箱')"
-            >{{ showMasked ? '****' : customer.contact_email || '-' }}</span>
+            >{{ isMasked ? maskEmail(customer.contact_email) : customer.contact_email || '-' }}</span>
           </NDescriptionsItem>
           <NDescriptionsItem
             label="地址"
             :span="2"
           >
-            {{ customer.address || '-' }}
+            {{ isMasked ? maskAddress(customer.address) : customer.address || '-' }}
           </NDescriptionsItem>
           <NDescriptionsItem
             label="备注"
