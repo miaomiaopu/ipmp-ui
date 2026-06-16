@@ -4,8 +4,8 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)
 ![Naive UI](https://img.shields.io/badge/Naive%20UI-2.x-18a058)
 ![Vite](https://img.shields.io/badge/Vite-6.x-646CFF?logo=vite)
-![CI](https://img.shields.io/badge/CI-typecheck%20%7C%20lint%20%7C%20build-green?logo=githubactions)
-![Version](https://img.shields.io/badge/Version-0.1.0-blue)
+![CI](https://img.shields.io/badge/CI-build-green?logo=githubactions)
+![Version](https://img.shields.io/badge/Version-0.2.0-blue)
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue)
 
 IPMP（Intelligent Project Management Platform）前端应用，提供项目管理、工时录入、周报查看等交互界面。AI 周报优先支持 DeepSeek。
@@ -32,8 +32,8 @@ IPMP（Intelligent Project Management Platform）前端应用，提供项目管�
 - **项目管理**: 项目全生命周期管理、关联客户与任务
 - **任务管理**: 统一任务面板，支持项目/客户/日常三类任务的快速创建与状态流转
 - **需求跟踪**: 项目需求与售后需求的管理面板
-- **工时录入**: 周网格视图快速录入每日工时，支持描述编辑
-- **周报查看**: 个人工作周报 + 项目周报，支持 AI 生成与编辑
+- **工时录入**: 每日工时录入、当日工时提示、CSV 导出
+- **周报查看**: 个人工作周报 + 项目周报，支持 AI mock 生成
 - **个人设置**: AI Key 配置（DeepSeek/OpenAI/Claude），加密传输、不明文回显
 
 ## 技术栈
@@ -77,10 +77,7 @@ ipmp-ui/
 │   ├── api/                       # API 调用层 (Axios, 仅 GET/POST)
 │   ├── components/
 │   │   ├── layout/                # AppLayout, Sidebar, Navbar
-│   │   ├── common/                # DataTable, SearchForm, StatusTag
-│   │   ├── task/                  # TaskForm, KanbanCard
-│   │   ├── work-log/              # DailyLogForm, WeeklyGrid
-│   │   └── report/                # WeeklyReportViewer, ReportEditor
+│   │   └── layout/                # AppLayout
 │   ├── pages/                     # 页面组件
 │   ├── router/                    # 路由 + 守卫
 │   ├── store/                     # Pinia 状态管理
@@ -89,7 +86,8 @@ ipmp-ui/
 │   └── utils/                     # 工具函数
 ├── .github/workflows/
 │   ├── ci.yml                     # CI: typecheck + lint + test + build
-│   └── deploy.yml                 # CD: 静态资源部署
+│   ├── deploy-dev.yml             # 已停用，仅保留手动 no-op
+│   └── deploy.yml                 # Pages 部署已停用
 ├── index.html
 ├── vite.config.ts
 └── .env.example
@@ -109,9 +107,9 @@ ipmp-ui/
 | `/tasks/:id` | TaskDetailPage | 任务详情 |
 | `/requirements` | RequirementListPage | 需求列表 |
 | `/requirements/:id` | RequirementDetailPage | 需求详情 |
-| `/work-logs` | WorkLogPage | 工时录入（周网格） |
-| `/reports/weekly` | WeeklyReportPage | 个人周报 |
-| `/reports/project` | ProjectReportPage | 项目周报 |
+| `/work-logs` | WorkLogPage | 工时录入 |
+| `/work-logs/overview` | WorkLogOverviewPage | 工时概览 |
+| `/weekly-reports` | WeeklyReportListPage | 个人/项目周报 |
 | `/settings` | SettingsPage | 个人设置 + AI 配置 |
 
 ## 组件架构
@@ -129,18 +127,14 @@ AppLayout
 
 | Pipeline | 触发 | 内容 |
 |----------|------|------|
-| **CI** | push / PR to main | typecheck → lint → test → gitleaks → build |
-| **CD-Dev** | tag `dev*` | build → rsync dist/ → 云服务器 Nginx |
-| **Pages** | push to main | build → deploy to GitHub Pages |
+| **CI** | push / PR to main | `pnpm install --frozen-lockfile` → `pnpm build` |
+| **CD-Dev** | 手动触发 | 已停用 no-op，不执行 rsync |
+| **Pages** | 手动触发 | 已停用 no-op |
 
-## 部署
+## 本地校验
 
-前端静态资源与后端共用 docker-compose，Nginx 反向代理：
-
-```
-/opt/ipmp/www/  ← CD-Dev 自动部署 dist/
-    ↓ (docker-compose 挂载)
-/var/www/html   ← nginx container root
+```powershell
+npm run build
 ```
 
 ## 安全
@@ -154,7 +148,7 @@ AppLayout
 
 - [x] 客户/项目页面 + 双主题 + 响应式 + CI/CD (Phase 1)
 - [x] 用户管理 + 任务 + 需求 + 工时 + 设置 + admin 仪表盘 (Phase 2)
-- [ ] 周报查看 + AI 生成交互 (Phase 3-4)
+- [x] 周报查看 + AI mock 生成交互 (Phase 3-4 最小可用)
 - [ ] 暗色模式 + 通知系统 (Phase 5)
 
 ## 许可证

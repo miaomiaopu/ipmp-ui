@@ -1,40 +1,10 @@
-# 开发环境部署 — 推送 dev* 标签时构建前端并 rsync 到云服务器 Nginx
-name: CD-Dev
+name: CD-Dev Disabled
 
 on:
-  push:
-    tags: ['dev*']
   workflow_dispatch:
 
 jobs:
-  deploy:
+  disabled:
     runs-on: ubuntu-latest
-    environment: dev
-
     steps:
-      - uses: actions/checkout@v6
-
-      - uses: pnpm/action-setup@v6
-        with:
-          version: 11
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          cache: 'pnpm'
-
-      - run: pnpm install --frozen-lockfile
-
-      - run: pnpm build
-
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.TC_SSH_KEY }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H "${{ secrets.TC_HOST }}" >> ~/.ssh/known_hosts
-
-      - name: Deploy to cloud server
-        run: |
-          rsync -rlzvci -e "ssh -i ~/.ssh/deploy_key" \
-            dist/ ${{ secrets.TC_USER }}@${{ secrets.TC_HOST }}:/opt/ipmp/www/
+      - run: echo "CD-Dev is disabled; local build and smoke validation are required before deployment."
