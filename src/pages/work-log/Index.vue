@@ -2,7 +2,7 @@
 import { ref, onMounted, h } from 'vue'
 import { NDataTable, NButton, NSpace, NInput, NSelect, NModal, NCard, NForm, NFormItem, NPopconfirm, useMessage } from 'naive-ui'
 import type { DataTableColumns } from 'naive-ui'
-import { getWorkLogs, createWorkLog, deleteWorkLog } from '@/api/workLog'
+import { getWorkLogs, createWorkLog, deleteWorkLog, exportWorkLogs } from '@/api/workLog'
 import { getTasks } from '@/api/task'
 
 const message = useMessage()
@@ -38,7 +38,16 @@ async function fetch() {
   finally { loading.value = false }
 }
 
-async function fetchTasks() { try { const r = await getTasks({ page_size: 100 }); taskOptions.value = (r.data.data || []).map((t: any) => ({ label: t.title, value: t.id })) } catch {} }
+async function fetchTasks() {
+  try {
+    const r = await getTasks({ page_size: 100 })
+    taskOptions.value = (r.data.data || []).map((t: any) => ({ label: `[${taskTypeLabel(t.task_type)}] ${t.title}`, value: t.id }))
+  } catch {}
+}
+
+function taskTypeLabel(type: string) {
+  return ({ project: '项目', customer: '客户', daily: '日常' } as Record<string, string>)[type] || type
+}
 
 async function checkTodayHours() {
   try { const r = await getWorkLogs({ page_size: 100, start_date: createForm.value.log_date, end_date: createForm.value.log_date }); todayTotal.value = (r.data.data || []).reduce((s: number, w: any) => s + w.hours, 0) } catch { todayTotal.value = 0 }
@@ -53,19 +62,42 @@ async function handleCreate() {
 
 async function handleDelete(row: any) { try { await deleteWorkLog(row.id); message.success('已删除'); fetch() } catch { message.error('删除失败') } }
 
+async function handleExport() {
+  try {
+    const res = await exportWorkLogs({})
+    const blob = new Blob([res.data], { type: 'text/csv;charset=utf-8' })
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.download = 'work_logs.csv'
+    link.click()
+    URL.revokeObjectURL(link.href)
+  } catch {
+    message.error('导出失败')
+  }
+}
+
 onMounted(() => { fetch(); fetchTasks() })
 </script>
 
 <template>
   <div>
     <div class="page-header">
-      <h1>工时录入</h1><NButton
-        type="primary"
-        size="small"
-        @click="showCreate = true; checkTodayHours()"
-      >
-        录入工时
-      </NButton>
+      <h1>工时录入</h1>
+      <NSpace :size="8">
+        <NButton
+          size="small"
+          @click="handleExport"
+        >
+          导出
+        </NButton>
+        <NButton
+          type="primary"
+          size="small"
+          @click="showCreate = true; checkTodayHours()"
+        >
+          录入工时
+        </NButton>
+      </NSpace>
     </div>
     <div style="overflow-x: auto">
       <NDataTable

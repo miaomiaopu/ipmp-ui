@@ -51,6 +51,11 @@ function showDetail(date: string) {
   viewMode.value = 'table'
 }
 
+function backToDaily() {
+  detailList.value = stats.value
+  viewMode.value = 'daily'
+}
+
 onMounted(fetch)
 </script>
 
@@ -119,7 +124,7 @@ onMounted(fetch)
         quaternary
         size="small"
         style="margin-bottom: 12px"
-        @click="viewMode = 'daily'; detailList = stats.value"
+        @click="backToDaily"
       >
         <template #icon>
           <NIcon><TimerOutline /></NIcon>

@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted, h } from 'vue'
+import { ref, onMounted, h, watch } from 'vue'
 import { NDataTable, NButton, NSpace, NInput, NSelect, NModal, NCard, NForm, NFormItem, NPopconfirm, useMessage } from 'naive-ui'
 import type { DataTableColumns } from 'naive-ui'
 import { getRequirements, createRequirement, deleteRequirement } from '@/api/requirement'
+import { getProjects } from '@/api/project'
+import { getCustomers } from '@/api/customer'
 
 const message = useMessage()
 const items = ref<any[]>([])
@@ -12,8 +14,19 @@ const page = ref(1)
 const typeFilter = ref<string | null>(null)
 const keyword = ref('')
 const showCreate = ref(false)
-const createForm = ref({ req_type: 'project', title: '', description: '', priority: 'medium' })
+const createForm = ref({
+  req_type: 'project',
+  requirement_code: '',
+  title: '',
+  description: '',
+  project_id: null as string | null,
+  customer_id: null as string | null,
+  priority: 'medium',
+  scheduled_date: '',
+})
 const saving = ref(false)
+const projectOptions = ref<{ label: string; value: string }[]>([])
+const customerOptions = ref<{ label: string; value: string }[]>([])
 
 const statusLabel: Record<string, string> = { pending: '待处理', approved: '已批准', rejected: '已拒绝', in_progress: '实施中', done: '已完成' }
 
@@ -39,16 +52,42 @@ async function fetch() {
   finally { loading.value = false }
 }
 
+async function fetchRefs() {
+  try {
+    const [projects, customers] = await Promise.all([getProjects({ page_size: 100 }), getCustomers({ page_size: 100 })])
+    projectOptions.value = (projects.data.data || []).map((p: any) => ({ label: p.name, value: p.id }))
+    customerOptions.value = (customers.data.data || []).map((c: any) => ({ label: c.name, value: c.id }))
+  } catch {
+    projectOptions.value = []
+    customerOptions.value = []
+  }
+}
+
 async function handleCreate() {
   saving.value = true
-  try { await createRequirement(createForm.value); showCreate.value = false; message.success('创建成功'); fetch() }
+  try {
+    const payload = { ...createForm.value } as Record<string, any>
+    if (payload.req_type !== 'project') payload.project_id = null
+    if (payload.req_type !== 'after_sales') payload.customer_id = null
+    if (!payload.scheduled_date) payload.scheduled_date = null
+    await createRequirement(payload)
+    showCreate.value = false
+    createForm.value = { req_type: 'project', requirement_code: '', title: '', description: '', project_id: null, customer_id: null, priority: 'medium', scheduled_date: '' }
+    message.success('创建成功')
+    fetch()
+  }
   catch (e: any) { message.error(e.message || '创建失败') }
   finally { saving.value = false }
 }
 
 async function handleDelete(row: any) { try { await deleteRequirement(row.id); message.success('已删除'); fetch() } catch { message.error('删除失败') } }
 
-onMounted(fetch)
+watch(() => createForm.value.req_type, () => {
+  createForm.value.project_id = null
+  createForm.value.customer_id = null
+})
+
+onMounted(() => { fetch(); fetchRefs() })
 </script>
 
 <template>
@@ -129,6 +168,39 @@ onMounted(fetch)
             />
           </NFormItem>
           <NFormItem
+            label="需求编号"
+            :show-feedback="false"
+          >
+            <NInput
+              v-model:value="createForm.requirement_code"
+              placeholder="REQ-001"
+            />
+          </NFormItem>
+          <NFormItem
+            v-if="createForm.req_type === 'project'"
+            label="项目"
+            :show-feedback="false"
+          >
+            <NSelect
+              v-model:value="createForm.project_id"
+              :options="projectOptions"
+              filterable
+              placeholder="选择项目"
+            />
+          </NFormItem>
+          <NFormItem
+            v-if="createForm.req_type === 'after_sales'"
+            label="客户"
+            :show-feedback="false"
+          >
+            <NSelect
+              v-model:value="createForm.customer_id"
+              :options="customerOptions"
+              filterable
+              placeholder="选择客户"
+            />
+          </NFormItem>
+          <NFormItem
             label="描述"
             :show-feedback="false"
           >
@@ -136,6 +208,15 @@ onMounted(fetch)
               v-model:value="createForm.description"
               type="textarea"
               :rows="2"
+            />
+          </NFormItem>
+          <NFormItem
+            label="计划日期"
+            :show-feedback="false"
+          >
+            <NInput
+              v-model:value="createForm.scheduled_date"
+              placeholder="2026-06-30"
             />
           </NFormItem>
           <NFormItem

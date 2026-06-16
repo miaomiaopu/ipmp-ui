@@ -112,8 +112,8 @@ html, body, #app {
 .status-dot.inactive::before    { background: var(--ink-muted); }
 .status-dot.planning::before    { background: var(--accent); }
 .status-dot.in_progress::before { background: var(--warning); }
+.status-dot.online::before      { background: var(--accent-hover); }
 .status-dot.completed::before   { background: var(--success); }
-.status-dot.suspended::before   { background: var(--danger); }
 
 /* === Responsive === */
 @media (max-width: 767px) {

@@ -14,7 +14,7 @@ const message = useMessage()
 const project = ref<(Project & { task_count: number; requirement_count: number }) | null>(null)
 const loading = ref(true)
 
-const statusLabel: Record<string, string> = { planning: '立项', in_progress: '实施中', completed: '已竣工', suspended: '挂起' }
+const statusLabel: Record<string, string> = { planning: '立项', in_progress: '实施中', online: '已上线', completed: '已竣工' }
 
 onMounted(async () => {
   try {

@@ -79,6 +79,12 @@ export const routes: RouteRecordRaw[] = [
         meta: { title: '工时概览' },
       },
       {
+        path: 'weekly-reports',
+        name: 'WeeklyReportList',
+        component: () => import('@/pages/weekly-report/List.vue'),
+        meta: { title: '周报' },
+      },
+      {
         path: 'settings',
         name: 'Settings',
         component: () => import('@/pages/settings/Index.vue'),

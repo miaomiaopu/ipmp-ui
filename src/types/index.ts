@@ -78,7 +78,7 @@ export interface Task {
   customer?: Customer
 }
 
-// 需求 (v0.2: 去submitter,增requirement_code/scheduled_date)
+// 需求 (v0.2: 增 requirement_code/scheduled_date)
 export interface Requirement {
   id: string
   req_type: string
@@ -107,6 +107,9 @@ export interface WorkLog {
   hours: number
   description: string
   created_at: string
+  task?: Task
+  project?: Project
+  customer?: Customer
 }
 
 // 周报

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, h } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import {
   NGrid, NGridItem, NCard, NIcon, NButton, NSpace,
 } from 'naive-ui'
@@ -9,30 +9,36 @@ import {
 } from '@vicons/ionicons5'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/store/auth'
-import { getUsers } from '@/api/user'
+import { getDashboardStats, getDashboardThisWeek } from '@/api/dashboard'
 
 const router = useRouter()
 const auth = useAuthStore()
 const isAdmin = computed(() => auth.user?.role === 'admin')
 
-const userTotal = ref(0)
-const adminCount = ref(0)
+const stats = ref<Record<string, any>>({})
+const thisWeek = ref<Record<string, any>>({})
+const loading = ref(false)
 
-const userStats = [
-  { label: '总用户数', value: userTotal, icon: PeopleOutline, accent: 'var(--accent)' },
-  { label: '管理员', value: adminCount, icon: PersonAddOutline, accent: 'var(--warning)' },
-]
+const userStats = computed(() => [
+  { label: '总用户数', value: stats.value.users ?? '-', icon: PeopleOutline, accent: 'var(--accent)' },
+  { label: '活跃用户', value: stats.value.active_users ?? '-', icon: PersonAddOutline, accent: 'var(--warning)' },
+])
 
-const bizStats = [
-  { label: '活跃项目', value: '-', icon: FolderOpenOutline, accent: 'var(--accent)' },
-  { label: '本周任务', value: '-', icon: BarChartOutline, accent: 'var(--success)' },
-  { label: '本周工时', value: '-', suffix: 'h', icon: TimerOutline, accent: 'var(--warning)' },
-  { label: '待处理需求', value: '-', icon: PeopleOutline, accent: 'var(--danger)' },
-]
+const bizStats = computed(() => [
+  { label: '客户数', value: stats.value.customers ?? '-', icon: PeopleOutline, accent: 'var(--accent)' },
+  { label: '活跃项目', value: stats.value.active_projects ?? '-', icon: FolderOpenOutline, accent: 'var(--success)' },
+  { label: '本周工时', value: stats.value.this_week_hours ?? '-', suffix: 'h', icon: TimerOutline, accent: 'var(--warning)' },
+  { label: '待处理需求', value: stats.value.open_requirements ?? '-', icon: BarChartOutline, accent: 'var(--danger)' },
+])
 
 onMounted(async () => {
-  if (isAdmin.value) {
-    try { const r = await getUsers({ page_size: 1000 }); userTotal.value = r.data.pagination?.total || 0; adminCount.value = (r.data.data || []).filter((u: any) => u.role === 'admin').length } catch { /* */ }
+  loading.value = true
+  try {
+    const [statsRes, weekRes] = await Promise.all([getDashboardStats(), getDashboardThisWeek()])
+    stats.value = statsRes.data.data || {}
+    thisWeek.value = weekRes.data.data || {}
+  } finally {
+    loading.value = false
   }
 })
 </script>
@@ -60,6 +66,7 @@ onMounted(async () => {
         <NCard
           size="small"
           :bordered="true"
+          :loading="loading"
         >
           <div style="display: flex; align-items: flex-start; justify-content: space-between">
             <div>
@@ -128,6 +135,7 @@ onMounted(async () => {
         <NCard
           size="small"
           :bordered="true"
+          :loading="loading"
         >
           <div style="display: flex; align-items: flex-start; justify-content: space-between">
             <div>
@@ -160,16 +168,13 @@ onMounted(async () => {
     <!-- Welcome (non-admin only) -->
     <NCard
       v-if="!isAdmin"
-      title="欢迎"
+      title="本周工作"
       :bordered="true"
       style="margin-top: 24px"
     >
       <div style="color: var(--ink-soft); line-height: 1.7">
-        <p>欢迎使用 IPMP 项目管理系统。</p>
-        <p>通过左侧导航栏或底部 Tab 选择功能模块。</p>
-        <p style="margin-top: 8px; font-size: 13px; color: var(--ink-muted)">
-          连接后端数据库后将实时展示统计数据和本周工作摘要。
-        </p>
+        <p>{{ thisWeek.week_start }} 至 {{ thisWeek.week_end }}</p>
+        <p>已填报 {{ thisWeek.total_hours ?? 0 }}h，{{ (thisWeek.work_logs || []).length }} 条记录。</p>
       </div>
     </NCard>
   </div>

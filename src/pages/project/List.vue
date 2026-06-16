@@ -5,6 +5,7 @@ import { NDataTable, NButton, NSpace, NInput, NModal, NCard, NForm, NFormItem, N
 import type { DataTableColumns } from 'naive-ui'
 import type { Project } from '@/types'
 import { getProjects, createProject, deleteProject } from '@/api/project'
+import { getCustomers } from '@/api/customer'
 
 const router = useRouter()
 const message = useMessage()
@@ -17,17 +18,18 @@ const keyword = ref('')
 const statusFilter = ref<string | null>(null)
 
 const showCreate = ref(false)
-const createForm = ref({ project_code: '', name: '', description: '', status: 'planning' })
+const createForm = ref({ project_code: '', name: '', customer_id: null as string | null, description: '', status: 'planning' })
 const saving = ref(false)
+const customerOptions = ref<{ label: string; value: string }[]>([])
 
 const statusOptions = [
   { label: '立项', value: 'planning' },
   { label: '实施中', value: 'in_progress' },
+  { label: '已上线', value: 'online' },
   { label: '已竣工', value: 'completed' },
-  { label: '挂起', value: 'suspended' },
 ]
 
-const statusLabel: Record<string, string> = { planning: '立项', in_progress: '实施中', completed: '已竣工', suspended: '挂起' }
+const statusLabel: Record<string, string> = { planning: '立项', in_progress: '实施中', online: '已上线', completed: '已竣工' }
 
 const columns: DataTableColumns<Project> = [
   { title: '编码', key: 'project_code', width: 100, ellipsis: { tooltip: true } },
@@ -64,12 +66,21 @@ async function fetchProjects() {
   finally { loading.value = false }
 }
 
+async function fetchCustomers() {
+  try {
+    const res = await getCustomers({ page_size: 100 })
+    customerOptions.value = (res.data.data || []).map((c: any) => ({ label: `${c.customer_code} ${c.name}`, value: c.id }))
+  } catch {
+    customerOptions.value = []
+  }
+}
+
 async function handleCreate() {
   saving.value = true
   try {
     await createProject(createForm.value as any)
     showCreate.value = false
-    createForm.value = { project_code: '', name: '', description: '', status: 'planning' }
+    createForm.value = { project_code: '', name: '', customer_id: null, description: '', status: 'planning' }
     message.success('创建成功')
     fetchProjects()
   } catch (e: any) { message.error(e.message || e.response?.data?.message || '创建失败') }
@@ -81,7 +92,7 @@ async function handleDelete(row: Project) {
   catch { message.error('删除失败') }
 }
 
-onMounted(fetchProjects)
+onMounted(() => { fetchProjects(); fetchCustomers() })
 </script>
 
 <template>
@@ -167,6 +178,17 @@ onMounted(fetchProjects)
             <NInput
               v-model:value="createForm.name"
               placeholder="项目名称"
+            />
+          </NFormItem>
+          <NFormItem
+            label="客户"
+            :show-feedback="false"
+          >
+            <NSelect
+              v-model:value="createForm.customer_id"
+              :options="customerOptions"
+              filterable
+              placeholder="选择客户"
             />
           </NFormItem>
           <NFormItem

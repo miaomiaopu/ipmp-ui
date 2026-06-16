@@ -9,7 +9,7 @@ import {
   PeopleOutline, FolderOpenOutline,
   LogOutOutline, SunnyOutline, MoonOutline, MenuOutline,
   BarChartOutline, ListOutline, CheckmarkCircleOutline,
-  TimerOutline, SettingsOutline, PersonAddOutline,
+  TimerOutline, SettingsOutline, PersonAddOutline, DocumentTextOutline,
 } from '@vicons/ionicons5'
 import { useAuthStore } from '@/store/auth'
 import { useThemeStore } from '@/store/theme'
@@ -49,6 +49,7 @@ const userMenuOptions: MenuOption[] = [
   { label: '任务管理',  key: '/tasks',         icon: I(ListOutline) },
   { label: '需求管理',  key: '/requirements',  icon: I(CheckmarkCircleOutline) },
   { label: '工时录入',  key: '/work-logs',     icon: I(TimerOutline) },
+  { label: '周报',      key: '/weekly-reports', icon: I(DocumentTextOutline) },
   { label: '个人设置',  key: '/settings',      icon: I(SettingsOutline) },
 ]
 
@@ -66,6 +67,7 @@ const mobileTabOptions = computed(() =>
         { label: '客户', key: '/customers',    icon: I(PeopleOutline) },
         { label: '项目', key: '/projects',     icon: I(FolderOpenOutline) },
         { label: '工时', key: '/work-logs',    icon: I(TimerOutline) },
+        { label: '周报', key: '/weekly-reports', icon: I(DocumentTextOutline) },
       ],
 )
 
@@ -77,6 +79,7 @@ const currentKey = computed(() => {
   if (p.startsWith('/tasks'))         return '/tasks'
   if (p.startsWith('/requirements'))  return '/requirements'
   if (p.startsWith('/work-logs'))     return '/work-logs'
+  if (p.startsWith('/weekly-reports')) return '/weekly-reports'
   if (p.startsWith('/settings'))      return '/settings'
   return '/dashboard'
 })
